@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace HexagonDenys
 {
-    public class Grid : MonoBehaviour
+    public class CustomGrid : MonoBehaviour
     {
-        public static Grid Instance;
+        public static CustomGrid Instance;
 
         [Header("Grid Settings")]
         public Vector2Int Size = new Vector2Int(8, 9);
@@ -69,12 +69,12 @@ namespace HexagonDenys
 #if UNITY_EDITOR
             if (!Application.isPlaying)
             {
-                Grid.Instance = this;
+                CustomGrid.Instance = this;
             }
 #endif
 
             //Set up Grid origin based on Grid Size
-            transform.position = new Vector3((-((Size.x - 1) * PieceScale.x * 0.725f) / 2), (-((Size.y) * PieceScale.y) / 2));
+            transform.position = new Vector3((-((Size.x - 1) * PieceScale.x * 0.775f) / 2), (-((Size.y) * PieceScale.y) / 2));
 
             //Initialize Piece array;
             Pieces = new Piece[Size.x * Size.y];
@@ -128,11 +128,9 @@ namespace HexagonDenys
                         GameReady = false;
                         int colorIndex = GridJunctions[x, y].GridPoints[0].Piece.ColorIndex;
 
-                        #region DEBUG
 #if DEBUG
                         Debug.Log("Explosion found at " + x + ":" + y);
 #endif
-                        #endregion
                         int[] numRemoved = new int[GridPoint.All.GetLength(0)];
                         int[] lastRemoved = new int[GridPoint.All.GetLength(0)];
                         for (int i = 0; i < GridJunctions[x, y].GridPoints.Length; i++)
@@ -238,7 +236,7 @@ namespace HexagonDenys
 
         private void Awake()
         {
-            Grid.Instance = this;
+            CustomGrid.Instance = this;
             //AudioSource = gameObject.GetComponent<AudioSource>();
 
             //if (Bomb.Exploded)
@@ -322,12 +320,10 @@ namespace HexagonDenys
                     Vector3 delta = Input.mousePosition - LastClickPosition;
                     if (delta.magnitude > 100.0f)
                     {
-                        #region DEBUG
 #if UNITY_EDITOR && DEBUG
                         if (Selection.gameObject.activeInHierarchy)
                             Debug.Log(Input.mousePosition.x + " | " + LastClickPosition.x);
 #endif
-                        #endregion
                         if (Selection.gameObject.activeInHierarchy)
                         {
                             if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))

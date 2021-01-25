@@ -5,10 +5,10 @@ using UnityEditor.SceneManagement;
 
 namespace HexagonDenys.Editors
 {
-    [CustomEditor(typeof(Grid))]
+    [CustomEditor(typeof(CustomGrid))]
     public class GridEditor : Editor
     {
-        Grid grid;
+        CustomGrid grid;
 
         public override void OnInspectorGUI()
         {
@@ -37,7 +37,7 @@ namespace HexagonDenys.Editors
 
         private void OnEnable()
         {
-            grid = (Grid)target;
+            grid = (CustomGrid)target;
         }
     }
 }

@@ -13,24 +13,20 @@ namespace HexagonDenys
 
         private int score = 0;
         public int Score
-        #region Property
         {
             get => score;
             set => TextScore.text = (score = value).ToString();
         }
-        #endregion
         private int numMoves = 0;
         public int NumMoves
-        #region Property
         {
             get => numMoves;
             set
             {
-                TextNumMoves.text = (numMoves = value).ToString();
+                TextNumMoves.text = "# of Moves \n" + (numMoves = value).ToString();
                 Bomb.TickAllBombs();
             }
         }
-        #endregion
 
         private void Awake() => Menu.Instance = this;
 

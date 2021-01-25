@@ -10,7 +10,6 @@ namespace HexagonDenys.Editors
     {
         Piece piece;
 
-        //These might leak memory but it's not that serious.
         Texture2D[] ColoredButtons;
 
         public override void OnInspectorGUI()

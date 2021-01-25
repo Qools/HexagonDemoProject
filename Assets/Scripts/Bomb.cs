@@ -9,12 +9,10 @@ namespace HexagonDenys
 
         public TextMesh TextMesh;
         public string Text
-        #region Property
         {
             get => TextMesh.text;
             set => TextMesh.text = value;
         }
-        #endregion
         [System.NonSerialized]
         public int CreatedAtMove;
         [System.NonSerialized]
@@ -23,7 +21,6 @@ namespace HexagonDenys
 
         private static bool exploded;
         public static bool Exploded
-        #region Property
         {
             get
             {
@@ -33,20 +30,17 @@ namespace HexagonDenys
             }
             set => exploded = value;
         }
-        #endregion
 
-        #region Helper Functions
         public static Bomb CreateNew(GridPoint gridPoint)
         {
             Bomb bomb = Piece.CreateNewSprite().AddComponent<Bomb>();
             bomb.gameObject.name = "bomb";
             //Both x and y are assigned PieceScale.X because the bomb is round, we don't want to squish it by assigning different values
-            bomb.transform.localScale = new Vector3(Grid.Instance.PieceScale.x, Grid.Instance.PieceScale.x);
+            bomb.transform.localScale = new Vector3(CustomGrid.Instance.PieceScale.x, CustomGrid.Instance.PieceScale.x);
             bomb.gameObject.SetActive(true);
             Bomb.All.Add(bomb);
 
-            bomb.SpriteRenderer.sprite = Grid.Instance.BombSprite;
-            bomb.SpriteRenderer.sortingOrder = 1;
+            bomb.image.sprite = CustomGrid.Instance.BombSprite;
 
             //Maybe TextMesh is not such a good choice as it looks like shit.
             GameObject temp = new GameObject("textMesh");
@@ -59,7 +53,7 @@ namespace HexagonDenys
             bomb.TextMesh.gameObject.GetComponent<MeshRenderer>().sortingOrder = 9;
 
             gridPoint.Piece = bomb;
-            bomb.Color = Grid.Instance.PieceColors[Random.Range(0, Grid.Instance.PieceColors.Length)];
+            bomb.Color = CustomGrid.Instance.PieceColors[Random.Range(0, CustomGrid.Instance.PieceColors.Length)];
             bomb.TimeActivated = Time.time;
             bomb.transform.localPosition = bomb.GridPosStart;
             bomb.CreatedAtMove = Menu.Instance.NumMoves;
@@ -68,7 +62,6 @@ namespace HexagonDenys
 
             return bomb;
         }
-        #endregion
 
         public static void TickAllBombs()
         {
@@ -104,7 +97,7 @@ namespace HexagonDenys
 
                 if (bomb.RemainingMoves <= 0)
                 {
-                    //Menu.Instance.Restart();
+                    Menu.Instance.Restart();
                     Bomb.Exploded = true;
                     return;
                 }

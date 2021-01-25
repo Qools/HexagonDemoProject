@@ -1,81 +1,75 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace HexagonDenys
 {
     public class Selection : MonoBehaviour
     {
-        public GameObject BackgroundObject;
         public GameObject ForegroundObject;
         public GameObject Piece0;
         public GameObject Piece1;
         public GameObject Piece2;
 
-        private SpriteRenderer Piece0SpriteRenderer;
+        private Image Piece0SpriteRenderer;
         public Color Piece0Color
-        #region Property
         {
             get => Piece0SpriteRenderer.color;
             set => Piece0SpriteRenderer.color = value;
         }
-        #endregion
 
-        private SpriteRenderer Piece1SpriteRenderer;
+        private Image Piece1SpriteRenderer;
         public Color Piece1Color
-        #region Property
         {
             get => Piece1SpriteRenderer.color;
             set => Piece1SpriteRenderer.color = value;
         }
-        #endregion
 
-        private SpriteRenderer Piece2SpriteRenderer;
+        private Image Piece2SpriteRenderer;
         public Color Piece2Color
-        #region Property
         {
             get => Piece2SpriteRenderer.color;
             set => Piece2SpriteRenderer.color = value;
         }
-        #endregion
 
-        private SpriteRenderer Bomb0SpriteRenderer;
-        private SpriteRenderer Bomb1SpriteRenderer;
-        private SpriteRenderer Bomb2SpriteRenderer;
+        private Image Bomb0SpriteRenderer;
+        private Image Bomb1SpriteRenderer;
+        private Image Bomb2SpriteRenderer;
 
         [System.NonSerialized]
         public GridJunction SelectedGridJunction;
 
         private void Start()
         {
-            Grid.Instance.Selection = this;
+            CustomGrid.Instance.Selection = this;
 
-            Piece0SpriteRenderer = Piece0.GetComponent<SpriteRenderer>();
-            Piece1SpriteRenderer = Piece1.GetComponent<SpriteRenderer>();
-            Piece2SpriteRenderer = Piece2.GetComponent<SpriteRenderer>();
+            Piece0SpriteRenderer = Piece0.GetComponent<Image>();
+            Piece1SpriteRenderer = Piece1.GetComponent<Image>();
+            Piece2SpriteRenderer = Piece2.GetComponent<Image>();
 
-            Bomb0SpriteRenderer = Piece0.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
-            Bomb1SpriteRenderer = Piece1.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
-            Bomb2SpriteRenderer = Piece2.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
+            Bomb0SpriteRenderer = Piece0.transform.GetChild(0).gameObject.GetComponent<Image>();
+            Bomb1SpriteRenderer = Piece1.transform.GetChild(0).gameObject.GetComponent<Image>();
+            Bomb2SpriteRenderer = Piece2.transform.GetChild(0).gameObject.GetComponent<Image>();
 
-            ForegroundObject.transform.parent = null; //We don't want the circle to get squished
-            ForegroundObject.transform.localScale = Vector3.one * Grid.Instance.PieceScale.x;
-            transform.localScale = Grid.Instance.PieceScale;
+            
+            ForegroundObject.transform.localScale = Vector3.one / 2 * CustomGrid.Instance.PieceScale.x;
+            transform.localScale = CustomGrid.Instance.PieceScale;
 
             Deactivate();
+            ForegroundObject.transform.parent = null;
         }
 
         public void Reactivate()
         {
             Activate(Camera.allCameras[0].WorldToScreenPoint(transform.position));
         }
-        //This Overload is added because mousePosition returns Vector3 while Touch.position returns Vector2
         public void Activate(Vector2 screenPoint)
         {
             Activate(new Vector3(screenPoint.x, screenPoint.y, 0));
         }
         public void Activate(Vector3 screenPoint)
         {
-            if (Grid.Instance == null)
+            if (CustomGrid.Instance == null)
                 return;
 
             //Play audio
@@ -86,16 +80,16 @@ namespace HexagonDenys
             //Find the closest GridJunction
             GridJunction closest = null;
             float closestDist = float.MaxValue;
-            for (int x = 0; x < Grid.Instance.GridJunctions.GetLength(0); x++)
+            for (int x = 0; x < CustomGrid.Instance.GridJunctions.GetLength(0); x++)
             {
-                for (int y = 0; y < Grid.Instance.GridJunctions.GetLength(1); y++)
+                for (int y = 0; y < CustomGrid.Instance.GridJunctions.GetLength(1); y++)
                 {
-                    float dist = Vector3.Distance(Grid.Instance.GridJunctions[x, y].WorldPosition, worldPoint);
+                    float dist = Vector3.Distance(CustomGrid.Instance.GridJunctions[x, y].WorldPosition, worldPoint);
 
                     if (dist > closestDist)
                         continue;
 
-                    closest = Grid.Instance.GridJunctions[x, y];
+                    closest = CustomGrid.Instance.GridJunctions[x, y];
                     closestDist = dist;
                 }
             }
@@ -114,10 +108,9 @@ namespace HexagonDenys
             ForegroundObject.transform.position = transform.position = SelectedGridJunction.WorldPosition;
 
             //Rotate Bg and reposition pieces based on oddness
-            BackgroundObject.transform.localRotation = SelectedGridJunction.IsOdd ? Quaternion.Euler(Vector3.zero) : Quaternion.Euler(Vector3.up * 180);
-            Piece0.transform.localPosition = SelectedGridJunction.IsOdd ? new Vector3(-0.375f, 0) : new Vector3(0.375f, 0);
-            Piece1.transform.localPosition = SelectedGridJunction.IsOdd ? new Vector3(0.375f, -0.5f) : new Vector3(-0.375f, -0.5f);
-            Piece2.transform.localPosition = SelectedGridJunction.IsOdd ? new Vector3(0.375f, 0.5f) : new Vector3(-0.375f, 0.5f);
+            Piece0.transform.localPosition = SelectedGridJunction.IsOdd ? new Vector3(-48, 0) : new Vector3(48, 0);
+            Piece1.transform.localPosition = SelectedGridJunction.IsOdd ? new Vector3(48, -61.7f) : new Vector3(-48, -61.7f);
+            Piece2.transform.localPosition = SelectedGridJunction.IsOdd ? new Vector3(48, 61.7f) : new Vector3(-48, 61.7f);
 
             //Assign Colors
             Piece0Color = SelectedGridJunction.GridPoints[0].Piece.Color;
@@ -181,7 +174,7 @@ namespace HexagonDenys
             }
 
             //Set GameReady state to false so player cannot make any more moves until the current one is finished
-            Grid.Instance.GameReady = false;
+            CustomGrid.Instance.GameReady = false;
 
             //Divide desired rotationTime by 3 because the rotation happens in 3 equal stages.
             //Doing this will enable the use of Lerp method.
@@ -205,7 +198,7 @@ namespace HexagonDenys
                 else
                     SelectedGridJunction.SwitchPiecesCounterClockwise();
 
-                if (Grid.Instance.ExplosionOccurred = Grid.Instance.CheckForExplosion(SelectedGridJunction))
+                if (CustomGrid.Instance.ExplosionOccurred = CustomGrid.Instance.CheckForExplosion(SelectedGridJunction))
                 {
                     transform.rotation = Quaternion.identity;
                     Deactivate();
@@ -216,14 +209,14 @@ namespace HexagonDenys
             }
 
             //Increase NumMoves if explosion occurred otherwise Set GameReady state back to true so player can make new moves.
-            if (Grid.Instance.ExplosionOccurred)
+            if (CustomGrid.Instance.ExplosionOccurred)
             {
                 Menu.Instance.NumMoves++;
             }
 
             else
             {
-                Grid.Instance.GameReady = true;
+                CustomGrid.Instance.GameReady = true;
 
                 //enable TextMeshRenderers back
                 if (SelectedGridJunction.GridPoints[0].Piece is Bomb)

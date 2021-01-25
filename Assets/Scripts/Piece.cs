@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace HexagonDenys
 {
@@ -13,7 +14,6 @@ namespace HexagonDenys
         [SerializeField]
         private GridPoint gridPoint;
         public GridPoint GridPoint
-        #region Property
         {
             get => gridPoint;
             set
@@ -22,7 +22,6 @@ namespace HexagonDenys
                 gridPoint = value;
             }
         }
-        #endregion
         [System.NonSerialized]
         private GridPoint LastGridPoint = null;
 
@@ -31,12 +30,11 @@ namespace HexagonDenys
         public Vector3 GridPosStart => GridPoint.LocalStartPosition;
         public Vector3 GridPosStartWorld => GridPoint.Grid.transform.TransformPoint(GridPoint.LocalStartPosition);
 
-        private SpriteRenderer spriteRenderer;
-        public SpriteRenderer SpriteRenderer => spriteRenderer == null ? spriteRenderer = GetComponent<SpriteRenderer>() : spriteRenderer;
+        private Image UI_Image;
+        public Image image => UI_Image == null ? UI_Image = GetComponent<Image>() : UI_Image;
         public Color Color
-        #region Property
         {
-            get => SpriteRenderer.color;
+            get => image.color;
             set
             {
                 for (int i = 0; i < GridPoint.Grid.PieceColors.Length; i++)
@@ -44,13 +42,12 @@ namespace HexagonDenys
                     if (GridPoint.Grid.PieceColors[i].Equals(value))
                     {
                         colorIndex = i;
-                        SpriteRenderer.color = GridPoint.Grid.PieceColors[i];
+                        image.color = GridPoint.Grid.PieceColors[i];
                         break;
                     }
                 }
             }
         }
-        #endregion
         [SerializeField]
         private int colorIndex;
         public int ColorIndex => colorIndex;
@@ -96,7 +93,7 @@ namespace HexagonDenys
             }
 #endif
             if (randomizeColor)
-                Color = Grid.Instance.PieceColors[Random.Range(0, Grid.Instance.PieceColors.Length)];
+                Color = CustomGrid.Instance.PieceColors[Random.Range(0, CustomGrid.Instance.PieceColors.Length)];
 
             return true;
         }
@@ -124,32 +121,30 @@ namespace HexagonDenys
                     Piece.Unused.Enqueue(this);
             }
         }
-
-        #region Helper Functions
+        
         protected static GameObject CreateNewSprite(int i = -1)
         {
             GameObject go = new GameObject("Piece" + (i < 0 ? "" : i.ToString()));
             go.SetActive(false);
 
             RectTransform rect = go.AddComponent<RectTransform>();
-            SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
-            AutoScaler autoScaler = go.AddComponent<AutoScaler>();
-            autoScaler.SIZE_ON_SCREEN = .33f;
-            go.transform.parent = Grid.Instance.transform;
-            go.transform.localScale = Grid.Instance.PieceScale;
+            Image sr = go.AddComponent<Image>();
+
+            sr.preserveAspect = true;
+            go.transform.parent = CustomGrid.Instance.transform;
+            go.transform.localScale = CustomGrid.Instance.PieceScale;
             return go;
         }
 
         public static Piece CreateNew(int i)
         {
             Piece piece = CreateNewSprite(i).AddComponent<Piece>();
-            piece.SpriteRenderer.sprite = Grid.Instance.PieceSprite;
-            Grid.Instance.Pieces[i] = piece;
+            piece.image.sprite = CustomGrid.Instance.PieceSprite;
+            CustomGrid.Instance.Pieces[i] = piece;
             piece.Index = i;
 
             return piece;
         }
-        #endregion
 
         protected virtual void Update()
         {
@@ -173,7 +168,7 @@ namespace HexagonDenys
             }
             else
             {
-                float t = (1.0f / Grid.Instance.Size.y) * (LastGridPoint.Y - GridPoint.Y);
+                float t = (1.0f / CustomGrid.Instance.Size.y) * (LastGridPoint.Y - GridPoint.Y);
                 if (DeltaActivation < t)
                     transform.localPosition = Vector3.Lerp(LastGridPoint.LocalPosition, GridPos, (1.0f / t) * DeltaActivation);
                 else

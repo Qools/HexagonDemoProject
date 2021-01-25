@@ -6,7 +6,7 @@ namespace HexagonDenys
 {
     public class GridJunction
     {
-        public Grid Grid;
+        public CustomGrid Grid;
 
         public GridPoint[] GridPoints = new GridPoint[3];
 
@@ -20,11 +20,11 @@ namespace HexagonDenys
         [SerializeField]
         private Vector3 localPosition;
         public Vector3 LocalPosition => localPosition;
-        public Vector3 WorldPosition => Grid.Instance.transform.TransformPoint(localPosition);
+        public Vector3 WorldPosition => CustomGrid.Instance.transform.TransformPoint(localPosition);
 
         public bool IsOdd => X % 2 > 0 ? true : false;
 
-        public GridJunction(Grid grid, int x, int y)
+        public GridJunction(CustomGrid grid, int x, int y)
         {
             Grid = grid;
             this.x = x;

@@ -5,14 +5,12 @@ namespace HexagonDenys
     [System.Serializable]
     public class GridPoint
     {
-        //Multi Dimension Arrays are not serializable so this only works during runtime. For editor use see GridPoint.GetAt()
         public static GridPoint[,] All;
 
-        public Grid Grid;
+        public CustomGrid Grid;
         [SerializeField]
         private Piece piece;
         public Piece Piece
-        #region Property
         {
             get => piece;
             set
@@ -22,7 +20,6 @@ namespace HexagonDenys
                 piece = value;
             }
         }
-        #endregion
 
         [SerializeField]
         private int x;
@@ -34,15 +31,15 @@ namespace HexagonDenys
         //Bottom left corner is (0, 0)
         [SerializeField]
         private Vector3 localPosition;
-        public Vector3 LocalPosition => localPosition; //I did this because readonly fields are not serialized
-        public Vector3 WorldPosition => Grid.Instance.transform.TransformPoint(localPosition);
+        public Vector3 LocalPosition => localPosition;
+        public Vector3 WorldPosition => CustomGrid.Instance.transform.TransformPoint(localPosition);
         [SerializeField]
         private Vector3 localStartPosition;
         public Vector3 LocalStartPosition => localStartPosition;
 
         public bool IsOdd => X % 2 > 0 ? true : false;
 
-        public GridPoint(Grid grid, int x, int y)
+        public GridPoint(CustomGrid grid, int x, int y)
         {
             this.Grid = grid;
             this.x = x;
@@ -50,13 +47,13 @@ namespace HexagonDenys
 
             if (IsOdd)
             {
-                localPosition = new Vector3(x * Grid.PieceScale.x * 0.725f, y * Grid.PieceScale.y);
-                localStartPosition = new Vector3(x * Grid.PieceScale.x * 0.725f, Grid.Size.y + LocalPosition.y);
+                localPosition = new Vector3(x * Grid.PieceScale.x * 0.775f, y * Grid.PieceScale.y) * (Screen.height / 5f);
+                localStartPosition = new Vector3(x * Grid.PieceScale.x * 0.775f, Grid.Size.y + LocalPosition.y) * (Screen.height / 5f);
             }
             else
             {
-                localPosition = new Vector3(x * Grid.PieceScale.x * 0.725f, (y * Grid.PieceScale.y) - (Grid.PieceScale.y / 2));
-                localStartPosition = new Vector3(x * Grid.PieceScale.x * 0.725f, Grid.Size.y + LocalPosition.y - (Grid.PieceScale.y / 2));
+                localPosition = new Vector3(x * Grid.PieceScale.x * 0.775f, (y * Grid.PieceScale.y) - (Grid.PieceScale.y / 2)) * (Screen.height / 5f);
+                localStartPosition = new Vector3(x * Grid.PieceScale.x * 0.775f, Grid.Size.y + LocalPosition.y - (Grid.PieceScale.y / 2)) * (Screen.height / 5f);
             }
         }
 
@@ -64,7 +61,6 @@ namespace HexagonDenys
         {
             neighbor = null;
 
-            //If a and b isn't neighbors this is futile!
             if ((Mathf.Abs(a.X - b.X) != 1 && Mathf.Abs(a.Y - b.Y) > 1) || (Mathf.Abs(a.Y - b.Y) != 1 && Mathf.Abs(a.X - b.X) > 1))
                 return false;
 
@@ -84,7 +80,7 @@ namespace HexagonDenys
                         }
                     }
 
-                    if (b.Y < Grid.Instance.Size.y - 1)
+                    if (b.Y < CustomGrid.Instance.Size.y - 1)
                     {
                         temp = All[b.X, b.Y + 1];
                         if (temp != excluding)
@@ -96,7 +92,7 @@ namespace HexagonDenys
                 }
                 else
                 {
-                    if (a.Y < Grid.Instance.Size.y - 1)
+                    if (a.Y < CustomGrid.Instance.Size.y - 1)
                     {
                         temp = All[a.X, a.Y + 1];
                         if (temp != excluding)
@@ -130,7 +126,7 @@ namespace HexagonDenys
                     }
                 }
 
-                if (b.X < Grid.Instance.Size.x - 1)
+                if (b.X < CustomGrid.Instance.Size.x - 1)
                 {
                     temp = All[b.X + 1, lowestY];
                     if (temp != excluding)
