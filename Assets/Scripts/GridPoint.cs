@@ -45,15 +45,17 @@ namespace HexagonDenys
             this.x = x;
             this.y = y;
 
+            float coef = (Screen.height / (CustomGrid.Instance.Size.x / CustomGrid.Instance.SizeCoeff));
+
             if (IsOdd)
             {
-                localPosition = new Vector3(x * Grid.PieceScale.x * 0.775f, y * Grid.PieceScale.y) * (Screen.height / 5f);
-                localStartPosition = new Vector3(x * Grid.PieceScale.x * 0.775f, Grid.Size.y + LocalPosition.y) * (Screen.height / 5f);
+                localPosition = new Vector3(x * Grid.PieceScale.x * 0.775f, y * Grid.PieceScale.y) * coef;
+                localStartPosition = new Vector3(x * Grid.PieceScale.x * 0.775f, Grid.Size.y + LocalPosition.y) * coef;
             }
             else
             {
-                localPosition = new Vector3(x * Grid.PieceScale.x * 0.775f, (y * Grid.PieceScale.y) - (Grid.PieceScale.y / 2)) * (Screen.height / 5f);
-                localStartPosition = new Vector3(x * Grid.PieceScale.x * 0.775f, Grid.Size.y + LocalPosition.y - (Grid.PieceScale.y / 2)) * (Screen.height / 5f);
+                localPosition = new Vector3(x * Grid.PieceScale.x * 0.775f, (y * Grid.PieceScale.y) - (Grid.PieceScale.y / 2)) * coef;
+                localStartPosition = new Vector3(x * Grid.PieceScale.x * 0.775f, Grid.Size.y + LocalPosition.y - (Grid.PieceScale.y / 2)) * coef;
             }
         }
 

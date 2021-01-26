@@ -52,7 +52,7 @@ namespace HexagonDenys
             Bomb2SpriteRenderer = Piece2.transform.GetChild(0).gameObject.GetComponent<Image>();
 
             
-            ForegroundObject.transform.localScale = Vector3.one / 2 * CustomGrid.Instance.PieceScale.x;
+            ForegroundObject.transform.localScale = Vector3.one * CustomGrid.Instance.PieceScale.x / 4;
             transform.localScale = CustomGrid.Instance.PieceScale;
 
             Deactivate();
@@ -73,7 +73,7 @@ namespace HexagonDenys
                 return;
 
             //Play audio
-            //Grid.Instance.AudioSource.PlayOneShot(Grid.Instance.AC_PieceSelect);
+            CustomGrid.Instance.AudioSource.PlayOneShot(CustomGrid.Instance.AC_PieceSelect);
 
             Vector3 worldPoint = Camera.allCameras[0].ScreenToWorldPoint(screenPoint);
 
@@ -108,9 +108,11 @@ namespace HexagonDenys
             ForegroundObject.transform.position = transform.position = SelectedGridJunction.WorldPosition;
 
             //Rotate Bg and reposition pieces based on oddness
-            Piece0.transform.localPosition = SelectedGridJunction.IsOdd ? new Vector3(-48, 0) : new Vector3(48, 0);
-            Piece1.transform.localPosition = SelectedGridJunction.IsOdd ? new Vector3(48, -61.7f) : new Vector3(-48, -61.7f);
-            Piece2.transform.localPosition = SelectedGridJunction.IsOdd ? new Vector3(48, 61.7f) : new Vector3(-48, 61.7f);
+            float LenghtX = 40f;
+            float LenghtY = 50f;
+            Piece0.transform.localPosition = SelectedGridJunction.IsOdd ? new Vector3(-LenghtX, 0) : new Vector3(LenghtX, 0);
+            Piece1.transform.localPosition = SelectedGridJunction.IsOdd ? new Vector3(LenghtX, -LenghtY) : new Vector3(-LenghtX, -LenghtY);
+            Piece2.transform.localPosition = SelectedGridJunction.IsOdd ? new Vector3(LenghtX, LenghtY) : new Vector3(-LenghtX, LenghtY);
 
             //Assign Colors
             Piece0Color = SelectedGridJunction.GridPoints[0].Piece.Color;
@@ -151,10 +153,10 @@ namespace HexagonDenys
         private IEnumerator Rotate(float dir)
         {
             //Play Audio
-            //if (dir < 0)
-            //    Grid.Instance.AudioSource.PlayOneShot(Grid.Instance.AC_PieceClockwise);
-            //else
-            //    Grid.Instance.AudioSource.PlayOneShot(Grid.Instance.AC_PieceCounterClockwise);
+            if (dir < 0)
+                CustomGrid.Instance.AudioSource.PlayOneShot(CustomGrid.Instance.AC_PieceClockwise);
+            else
+                CustomGrid.Instance.AudioSource.PlayOneShot(CustomGrid.Instance.AC_PieceCounterClockwise);
 
             //Hide TextMesh if bomb. These will get reactivated after the move automaticly
             if (SelectedGridJunction.GridPoints[0].Piece is Bomb)

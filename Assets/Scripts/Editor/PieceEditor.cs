@@ -27,7 +27,6 @@ namespace HexagonDenys.Editors
                     if (GUILayout.Button("", guiStyle))
                     {
                         piece.Color = piece.GridPoint.Grid.PieceColors[i];
-                        //Scene is automaticly saved because sometimes editor doesn't realize scene is modified, in which case you cannot manually save it.
                         EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
                     }
                 }

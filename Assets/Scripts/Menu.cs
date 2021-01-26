@@ -15,7 +15,7 @@ namespace HexagonDenys
         public int Score
         {
             get => score;
-            set => TextScore.text = (score = value).ToString();
+            set => TextScore.text = "Score \n" + (score = value).ToString();
         }
         private int numMoves = 0;
         public int NumMoves
@@ -30,7 +30,6 @@ namespace HexagonDenys
 
         private void Awake() => Menu.Instance = this;
 
-        //Todo: Implement reseting static variables just in case
         public void Restart()
         {
             foreach (Bomb bomb in Bomb.All)

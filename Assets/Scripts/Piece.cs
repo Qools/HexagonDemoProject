@@ -131,8 +131,8 @@ namespace HexagonDenys
             Image sr = go.AddComponent<Image>();
 
             sr.preserveAspect = true;
-            go.transform.parent = CustomGrid.Instance.transform;
-            go.transform.localScale = CustomGrid.Instance.PieceScale;
+            rect.parent = CustomGrid.Instance.transform;
+            rect.localScale = CustomGrid.Instance.PieceScale;
             return go;
         }
 

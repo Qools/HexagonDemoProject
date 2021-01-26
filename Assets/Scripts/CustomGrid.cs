@@ -1,6 +1,7 @@
 #define DEBUG
 
 using UnityEngine;
+using System;
 
 namespace HexagonDenys
 {
@@ -11,7 +12,7 @@ namespace HexagonDenys
         [Header("Grid Settings")]
         public Vector2Int Size = new Vector2Int(8, 9);
         public Color[] PieceColors = new Color[5] { Color.red, Color.green, Color.blue, Color.yellow, Color.magenta };
-        public Vector3 PieceScale = new Vector3(1, 1, 1); //Todo: Make this automatic based on Grid Size
+        public Vector3 PieceScale = new Vector3(1.65f, 1.65f, 1); //Todo: Make this automatic based on Grid Size
         public int BombAppearanceScore = 1000;
         public float PieceActivationInterval = 0.016666f;
         public bool StartByCheckingExplosions = false;
@@ -20,12 +21,12 @@ namespace HexagonDenys
         public Sprite PieceSprite;
         public Sprite BombSprite;
 
-        //[Header("Audio Settings")]
-        //public AudioClip AC_PieceSelect;
-        //public AudioClip AC_PieceClockwise;
-        //public AudioClip AC_PieceCounterClockwise;
-        //public AudioClip AC_PieceExplosion;
-        //public AudioClip AC_BombExplosion;
+        [Header("Audio Settings")]
+        public AudioClip AC_PieceSelect;
+        public AudioClip AC_PieceClockwise;
+        public AudioClip AC_PieceCounterClockwise;
+        public AudioClip AC_PieceExplosion;
+        public AudioClip AC_BombExplosion;
 
         public int PieceCount => PieceColors.Length;
 
@@ -45,9 +46,10 @@ namespace HexagonDenys
         public bool ExplosionOccurred = false;
         [System.NonSerialized]
         public int BombCounter;
-        //[System.NonSerialized]
-        //public AudioSource AudioSource;
-
+        [System.NonSerialized]
+        public AudioSource AudioSource;
+        [System.NonSerialized]
+        public float SizeCoeff;
         public void RemoveGrid()
         {
             if (Pieces != null)
@@ -66,6 +68,9 @@ namespace HexagonDenys
         {
             //Clean up old generated grid if it exists
             RemoveGrid();
+
+            SetPieceLocalScale();
+
 #if UNITY_EDITOR
             if (!Application.isPlaying)
             {
@@ -105,18 +110,6 @@ namespace HexagonDenys
             int yStart = 0;
             int xLength = GridJunctions.GetLength(0);
             int yLength = GridJunctions.GetLength(1);
-
-            //This was disabled because it created a bug where sometimes explosions wasn't detected correctly
-            /*
-            //Modify loop values to only check for the given junction and its neighbors to avoid unnecessary calculations
-            if (gridJunction != null)
-            {
-                xStart = gridJunction.X > 1 ? gridJunction.X - 2 : xStart;
-                yStart = gridJunction.Y > 1 ? gridJunction.Y - 2 : yStart;
-                xLength = gridJunction.X < xLength - 2 ? gridJunction.X + 3 : xLength;
-                yLength = gridJunction.Y < yLength - 2 ? gridJunction.Y + 3 : yLength;
-            }
-            */
 
             for (int y = yStart; y < yLength; y++)
             {
@@ -193,7 +186,7 @@ namespace HexagonDenys
                         Menu.Instance.Score += totalRemoved * 5;
 
                         //Play Audio
-                        //AudioSource.PlayOneShot(AC_PieceExplosion);
+                        AudioSource.PlayOneShot(AC_PieceExplosion);
 
                         return true;
                     }
@@ -234,17 +227,53 @@ namespace HexagonDenys
             }
         }
 
+        public void SetPieceLocalScale()
+        {
+            switch (Size.x)
+            {
+                case 8:
+                    PieceScale = new Vector3(1.75f, 1.75f, 1f);
+                    SizeCoeff = 1.2f;
+                    break;
+                case 9:
+                    PieceScale = new Vector3(1.6f, 1.65f, 1f);
+                    SizeCoeff = 1.35f;
+                    break;
+                case 10:
+                    PieceScale = new Vector3(1.45f, 1.55f, 1f);
+                    SizeCoeff = 1.5f;
+                    break;
+                case 11:
+                    PieceScale = new Vector3(1.3f, 1.45f, 1f);
+                    SizeCoeff = 1.65f;
+                    break;
+                case 12:
+                    PieceScale = new Vector3(1.15f, 1.35f, 1f);
+                    SizeCoeff = 1.8f;
+                    break;
+                case 13:
+                    PieceScale = new Vector3(1f, 1.25f, 1f);
+                    SizeCoeff = 1.95f;
+                    break;
+                default:
+                    PieceScale = new Vector3(0.8f, 0.72f, 1f);
+                    SizeCoeff = 2.25f;
+                    break;
+            }
+        }
+
         private void Awake()
         {
             CustomGrid.Instance = this;
-            //AudioSource = gameObject.GetComponent<AudioSource>();
+            AudioSource = gameObject.GetComponent<AudioSource>();
 
-            //if (Bomb.Exploded)
-            //    AudioSource.PlayOneShot(AC_BombExplosion);
+            if (Bomb.Exploded)
+                AudioSource.PlayOneShot(AC_BombExplosion);
         }
 
         void Start()
         {
+
             //Prepare two dimentional GridPoint Array for easy access
             GridPoint.All = new GridPoint[Size.x, Size.y];
             for (int i = 0; i < GridPoints.Length; i++)
@@ -307,7 +336,7 @@ namespace HexagonDenys
             Bomb.CheckFuses();
 
             //Ignore Input if mouse is hovering on top of the header.
-            if (Input.mousePosition.y < Screen.height - 100)
+            if (Input.mousePosition.y < Screen.height - 250)
             {
                 if (Input.GetMouseButtonDown(0))
                 {

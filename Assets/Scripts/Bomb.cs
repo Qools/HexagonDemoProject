@@ -35,21 +35,21 @@ namespace HexagonDenys
         {
             Bomb bomb = Piece.CreateNewSprite().AddComponent<Bomb>();
             bomb.gameObject.name = "bomb";
-            //Both x and y are assigned PieceScale.X because the bomb is round, we don't want to squish it by assigning different values
+
             bomb.transform.localScale = new Vector3(CustomGrid.Instance.PieceScale.x, CustomGrid.Instance.PieceScale.x);
             bomb.gameObject.SetActive(true);
             Bomb.All.Add(bomb);
 
             bomb.image.sprite = CustomGrid.Instance.BombSprite;
 
-            //Maybe TextMesh is not such a good choice as it looks like shit.
             GameObject temp = new GameObject("textMesh");
-            temp.transform.parent = bomb.transform;
+            RectTransform rect = temp.AddComponent<RectTransform>();
+            rect.parent = bomb.transform;
             bomb.TextMesh = temp.AddComponent<TextMesh>();
-            bomb.TextMesh.alignment = TextAlignment.Center;
-            bomb.TextMesh.anchor = TextAnchor.MiddleCenter;
-            bomb.TextMesh.color = Color.white;
-            bomb.TextMesh.characterSize = 0.5f;
+            bomb.TextMesh.alignment = TextAlignment.Right;
+            bomb.TextMesh.anchor = TextAnchor.MiddleRight;
+            bomb.TextMesh.color = Color.black;
+            bomb.TextMesh.characterSize = Screen.height / 50f;
             bomb.TextMesh.gameObject.GetComponent<MeshRenderer>().sortingOrder = 9;
 
             gridPoint.Piece = bomb;
@@ -90,7 +90,6 @@ namespace HexagonDenys
             {
                 if (bomb == null)
                 {
-                    //Todo: Fix this
                     Bomb.All.Remove(bomb);
                     continue;
                 }
