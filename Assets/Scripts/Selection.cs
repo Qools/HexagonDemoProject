@@ -108,8 +108,8 @@ namespace HexagonDenys
             ForegroundObject.transform.position = transform.position = SelectedGridJunction.WorldPosition;
 
             //Rotate Bg and reposition pieces based on oddness
-            float LenghtX = 40f;
-            float LenghtY = 50f;
+            float LenghtX = 39f;
+            float LenghtY = 49f;
             Piece0.transform.localPosition = SelectedGridJunction.IsOdd ? new Vector3(-LenghtX, 0) : new Vector3(LenghtX, 0);
             Piece1.transform.localPosition = SelectedGridJunction.IsOdd ? new Vector3(LenghtX, -LenghtY) : new Vector3(-LenghtX, -LenghtY);
             Piece2.transform.localPosition = SelectedGridJunction.IsOdd ? new Vector3(LenghtX, LenghtY) : new Vector3(-LenghtX, LenghtY);

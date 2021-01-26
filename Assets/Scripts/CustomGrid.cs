@@ -299,7 +299,6 @@ namespace HexagonDenys
         private void Update()
         {
             //This prevents player interaction when we don't need it.
-            //Example: before all pieces falls into place at the start.
             if (!GameReady)
             {
                 bool allActivated = true;

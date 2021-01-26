@@ -69,7 +69,6 @@ namespace HexagonDenys
             {
                 if (bomb == null)
                 {
-                    //Todo: Fix this
                     Bomb.All.Remove(bomb);
                     continue;
                 }
